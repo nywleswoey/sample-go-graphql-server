@@ -1,19 +1,28 @@
 package main
 
 import (
-	"sample-go-graphql-server/static/schema"
+	"database/sql"
 	"net/http"
 
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/handler"
+	_ "github.com/lib/pq"
 )
+
+var db *sql.DB
 
 func main() {
 	// define schema
 	schema, err := graphql.NewSchema(graphql.SchemaConfig{
-		Query: schema.RootQuery,
+		Query: QueryType,
+		Mutation: MutationType,
 	})
 
+	if err != nil {
+		panic(err)
+	}
+
+	db, err = sql.Open("postgres", "host=localhost dbname=test user=postgres sslmode=disable")
 	if err != nil {
 		panic(err)
 	}
